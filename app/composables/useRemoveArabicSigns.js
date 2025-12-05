@@ -37,7 +37,7 @@ export const useRemoveArabicSigns = () =>{
 
       let text = ayah.text.trim()
 
-      if (text.startsWith('بِسْمِ') || text.startsWith('بِسۡمِ') || text.startsWith('بسم') || text.startsWith('بِسمِ')) {
+      if (text.startsWith('بِسْمِ') || text.startsWith('بِسۡمِ') || text.startsWith('بسم') || text.startsWith('بِسمِ') || text.startsWith('بِّسْمِ')) {
         const words = text.split(' ')
         if (words.length > 4) {
           return words.slice(4).join(' ').trim()
