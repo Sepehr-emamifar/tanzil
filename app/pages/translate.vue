@@ -45,7 +45,6 @@ const network = inject('network')
 
 const handleRetry = async () => {
   
-  // اگه نت قطعه، فقط بگو وصل کن
   if (!network.isOnline.value) {
     toast.toastError({
       title: 'اتصال اینترنت قطع است',
@@ -54,20 +53,16 @@ const handleRetry = async () => {
     return
   }
 
-  // نت وصله، حالا تلاش کن
   await quranData.refreshAll()
   
-  // ⭐ بعد از refresh، ببین موفق شد یا نه
   await nextTick()
   
   if (quranData.hasError.value) {
-    // هنوز error داره = موفق نشد
     toast.toastError({
       title: 'بارگذاری ناموفق',
       description: 'خطا در دریافت اطلاعات. دوباره تلاش کنید'
     })
   } else {
-    // success
     toast.toastSuccess({
       title: 'بارگذاری موفق',
       description: 'اطلاعات با موفقیت بارگذاری شد'
