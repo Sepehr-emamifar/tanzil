@@ -1,5 +1,16 @@
 <template>
   <QuranFrame
+    :show-header="false"
+    v-if="quranData.hasError.value"
+  >
+    <ErrorState 
+    title="خطا در بارگذاری"
+    description="لطفاً اتصال اینترنت خود را بررسی کنید"
+    @retry="handleRetry"
+    />
+  </QuranFrame>
+  <QuranFrame
+    v-else
     :current-page="quranData.showPage.value?.ayahs?.[0]?.page"
     :juz-number="navigation.juzNumber.value"
     :surah-name="navigation.surahPage.value"
@@ -30,4 +41,37 @@
 const quranData = inject('quranData')
 const navigation = inject('navigation')
 const textSettings = inject('textSettings')
+const network = inject('network')
+
+const handleRetry = async () => {
+  
+  // اگه نت قطعه، فقط بگو وصل کن
+  if (!network.isOnline.value) {
+    toast.toastError({
+      title: 'اتصال اینترنت قطع است',
+      description: 'لطفاً ابتدا اتصال خود را برقرار کنید'
+    })
+    return
+  }
+
+  // نت وصله، حالا تلاش کن
+  await quranData.refreshAll()
+  
+  // ⭐ بعد از refresh، ببین موفق شد یا نه
+  await nextTick()
+  
+  if (quranData.hasError.value) {
+    // هنوز error داره = موفق نشد
+    toast.toastError({
+      title: 'بارگذاری ناموفق',
+      description: 'خطا در دریافت اطلاعات. دوباره تلاش کنید'
+    })
+  } else {
+    // success
+    toast.toastSuccess({
+      title: 'بارگذاری موفق',
+      description: 'اطلاعات با موفقیت بارگذاری شد'
+    })
+  }
+}
 </script>

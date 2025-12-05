@@ -163,4 +163,6 @@ provide('textSettings', textSettings)
 provide('audio', audio)
 provide('audioElement', audioElement)
 provide('appTemplate', appTemplate)
+const network = useNetworkStatus()
+provide('network', network)
 </script>

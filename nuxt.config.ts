@@ -13,12 +13,6 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', href: '/tanzil.svg' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { 
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Noto+Sans+Arabic:wght@400;700&display=swap'
-        }
       ]
     }
   },

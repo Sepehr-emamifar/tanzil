@@ -24,25 +24,44 @@ export const useQuranData = () => {
     'https://api.alquran.cloud/v1/edition'
   )
   
-  const { data: page, status: pageStatus } = useFetch(() => 
+  const { data: page, status: pageStatus, error: pageError, refresh: refreshPage } = useFetch(() => 
     `https://api.alquran.cloud/v1/page/${pageCounter.value}/${selectedEdition.value}`
   )
   
-  const { data: tarjomeh, status: tarjomehStatus } = useFetch(() => 
+  const { data: tarjomeh, status: tarjomehStatus, error: tarjomehError, refresh: refreshTarjomeh } = useFetch(() => 
     `https://api.alquran.cloud/v1/page/${pageCounter.value}/${selectedTranslator.value}`
   )
   
-  const { data: audio, status: audioStatus } = useFetch(() => 
+  const { data: audio, status: audioStatus, error: audioError, refresh: refreshAudio } = useFetch(() => 
     `https://api.alquran.cloud/v1/page/${pageCounter.value}/${selectedQari.value}`
   )
 
+  const network = inject('network' ,{isOnline:ref(true)})
+
+  const hasError = computed(()=> {
+    const isOfflineAndLoading =
+     !network.isOnline.value && (pageStatus.value === 'pending' || tarjomehStatus.value === 'pending')
+
+    const hasApiError = pageError.value || tarjomehError.value || audioError.value
+
+    return hasApiError || isOfflineAndLoading
+  })
 
   const isLoading = computed(() => 
-    pageStatus.value === 'pending' || 
+    (pageStatus.value === 'pending' || 
     tarjomehStatus.value === 'pending'||
-    audioStatus.value === 'pending',
+    audioStatus.value === 'pending') &&
+    !hasError.value
   )
 
+
+  const refreshAll = async() => {
+      await Promise.all([
+      refreshPage(),
+      refreshTarjomeh(),
+      refreshAudio()
+    ])
+  }
 
   const showPage = computed(() => page.value?.data ?? {})
   const metaPage = computed(() => meta.value?.data?.pages?.references ?? [])
@@ -71,7 +90,12 @@ export const useQuranData = () => {
     selectedQari,
     pageCounter,
 
+    hasError,
     isLoading,
+    refreshAll,
+    pageError,
+    tarjomehError,
+    audioError,
     
     showPage,
     metaPage,

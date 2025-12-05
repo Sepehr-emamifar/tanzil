@@ -15,7 +15,6 @@ export const useTextSettings = () => {
     { label: 'KFGQPC Uthmanic', value: 'KFGQPC Uthmanic' },
     { label: 'Me Quran', value: 'Me Quran' },
     { label: 'PDMS Saleem', value: 'PDMS Saleem' },
-    { label: 'Noto Sans Arabic', value: 'Noto Sans Arabic' },
     { label: 'Traditional Arabic', value: 'Traditional Arabic' }
   ]
 
