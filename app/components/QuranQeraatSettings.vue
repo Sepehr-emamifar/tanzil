@@ -46,35 +46,45 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  selectedTranslator: String,
-  selectedQari: String,
-  selectedEdition: String,
-  translator: Array,
-  qari: Array,
-  edition: Array
+<script setup lang="ts">
+import type { Edition } from '~~/types'
+
+interface Props {
+  selectedTranslator: string
+  selectedQari: string
+  selectedEdition: string
+  translator: Edition[]
+  qari: Edition[]
+  edition: Edition[]
+}
+const props = withDefaults(defineProps<Props>(),{
+  selectedTranslator: '',
+  selectedQari: '',
+  selectedEdition: '',
+  translator: ()=> ([]),
+  qari: ()=> ([]),
+  edition: ()=> ([]),
 })
 
-const emit = defineEmits([
-  'update:selectedTranslator',
-  'update:selectedQari',
-  'update:selectedEdition'
-])
+const emit = defineEmits<{
+    'update:selectedTranslator': [value:string]
+    'update:selectedQari': [value:string]
+    'update:selectedEdition': [value:string]
+}>()
 
 const selectedTranslator = computed({
   get: () => props.selectedTranslator,
-  set: (value) => emit('update:selectedTranslator', value)
+  set: (value: string) => emit('update:selectedTranslator', value)
 })
 
 const selectedQari = computed({
   get: () => props.selectedQari,
-  set: (value) => emit('update:selectedQari', value)
+  set: (value: string) => emit('update:selectedQari', value)
 })
 
 const selectedEdition = computed({
   get: () => props.selectedEdition,
-  set: (value) => emit('update:selectedEdition', value)
+  set: (value: string) => emit('update:selectedEdition', value)
 })
 
 const translatorOptions = computed(() => 

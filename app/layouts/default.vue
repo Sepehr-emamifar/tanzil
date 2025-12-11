@@ -106,9 +106,16 @@
     </div>
   </div>
 </template>
+<script setup lang="ts">
+import type { UseQuranDataReturn, UseQuranNavigationReturn, UseQuranTextSettingsReturn, UseQuranAudioReturn, UseAppTemplateReturn } from '~~/types'
 
-<script setup>
-const items = [
+interface NavItem {
+  label: string
+  to: string
+  icon: string
+}
+
+const items: NavItem[] = [
   {
     label: 'قران',
     to: '/quran',
@@ -131,15 +138,17 @@ const navigation = useQuranNavigation(quranData)
 const textSettings = useTextSettings()
 const appTemplate = useAppTemplate()
 
-const audioProgressBar = ref(null)
+const audioProgressBar = ref<{ audioElement: HTMLAudioElement } | null>(null)
 
 const audioElement = computed(() => audioProgressBar.value?.audioElement || null)
 const audio = useQuranAudio(quranData, navigation, audioElement)
 
+const network = useNetworkStatus()
+
 watch(audioElement, (element) => {
   if (element && quranData.audio.value?.data?.ayahs?.length) {
-    const findAudioBySurahAndAyah = (surahNumber, ayahNumber) => {
-      const ayahData = quranData.audio.value.data.ayahs.find(
+    const findAudioBySurahAndAyah = (surahNumber: number, ayahNumber: number): string | null => {
+      const ayahData = quranData.audio.value?.data?.ayahs.find(
         a => a.surah.number === surahNumber && a.numberInSurah === ayahNumber
       )
       return ayahData?.audio || ayahData?.audioSecondary?.[0] || null
@@ -157,12 +166,11 @@ watch(audioElement, (element) => {
   }
 }, { immediate: true })
 
-provide('quranData', quranData)
-provide('navigation', navigation)
-provide('textSettings', textSettings)
-provide('audio', audio)
-provide('audioElement', audioElement)
-provide('appTemplate', appTemplate)
-const network = useNetworkStatus()
+provide<UseQuranDataReturn>('quranData', quranData)
+provide<UseQuranNavigationReturn>('navigation', navigation)
+provide<UseQuranTextSettingsReturn>('textSettings', textSettings)
+provide<UseQuranAudioReturn>('audio', audio)
+provide<ComputedRef<HTMLAudioElement | null>>('audioElement', audioElement)
+provide<UseAppTemplateReturn>('appTemplate', appTemplate)
 provide('network', network)
 </script>

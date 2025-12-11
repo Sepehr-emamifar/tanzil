@@ -1,16 +1,18 @@
-export const useQuranSearch = () => {
-  const searchQuery = ref('')
-  const searchResults = ref(null)
-  const isSearching = ref(false)
-  const searchError = ref(null)
-  const page = ref(1)
-  const pageSize = 5
+import type { Ayah, SearchResult, UseQuranSearchReturn } from "~~/types"
 
-  const lastSearchQuery = useCookie('quran-last-search', {
+export const useQuranSearch = ():UseQuranSearchReturn => {
+  const searchQuery = ref<string>('')
+  const searchResults = ref<SearchResult | null>(null)
+  const isSearching = ref<boolean>(false)
+  const searchError = ref<string|null>(null)
+  const page = ref<number>(1)
+  const pageSize:number = 5
+
+  const lastSearchQuery = useCookie<string>('quran-last-search', {
     default: () => '',
   })
 
-  const handleSearch = async () => {
+  const handleSearch = async ():Promise<void> => {
 
     if (!searchQuery.value || searchQuery.value.trim().length < 2) {
       searchResults.value = null
@@ -21,11 +23,11 @@ export const useQuranSearch = () => {
       isSearching.value = true
       searchError.value = null
 
-      const response = await $fetch(
+      const response = await $fetch<{data:SearchResult}>(
         `https://api.alquran.cloud/v1/search/${encodeURIComponent(searchQuery.value.trim())}/all/quran-simple-clean`
       )
 
-      searchResults.value = response?.data
+      searchResults.value = response?.data || null
       lastSearchQuery.value = searchQuery.value.trim()
 
     } catch (error) {
@@ -37,7 +39,7 @@ export const useQuranSearch = () => {
     }
   }
 
-  const clearSearch = () => {
+  const clearSearch = ():void => {
     searchQuery.value = ''
     searchResults.value = null
     searchError.value = null
@@ -49,15 +51,15 @@ export const useQuranSearch = () => {
     }
   })
 
-  const resultsCount = computed(() => {
+  const resultsCount = computed<number>(() => {
     return searchResults.value?.count || 0
   })
 
-  const hasResults = computed(() => {
+  const hasResults = computed<boolean>(() => {
     return resultsCount.value > 0
   })
   
-  const paginatedResults = computed(() => {
+  const paginatedResults = computed<Ayah[]>(() => {
   if (!searchResults.value?.matches) return []
   
   const start = (page.value - 1) * pageSize
@@ -65,7 +67,7 @@ export const useQuranSearch = () => {
   
   return searchResults.value.matches.slice(start, end)
 
-})
+  })
   return {
     searchQuery,
     searchResults,

@@ -20,17 +20,18 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  title: {
-    type: String,
-    default: 'خطایی رخ داده است'
-  },
-  description: {
-    type: String,
-    default: 'لطفاً اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.'
-  }
+<script setup lang="ts">
+interface Props {
+  title?: string
+  description?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  title: 'خطایی رخ داده است',
+  description: 'لطفاً اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.'
 })
 
-defineEmits(['retry'])
+defineEmits<{
+  retry: []
+}>()
 </script>

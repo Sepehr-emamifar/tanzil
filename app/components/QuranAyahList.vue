@@ -32,17 +32,28 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  ayahs: Array,
-  contentStyle: Object,
-  selectedSurah: Number,
-  selectedAyah: Number,
+<script setup lang="ts">
+import type { Ayah, TextStyle } from '~~/types';
+
+interface Props{
+  ayahs: Ayah[],
+  contentStyle: TextStyle
+  selectedSurah: number,
+  selectedAyah: number,
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  ayahs: () => [],
+  contentStyle: () => ({} as TextStyle),
+  selectedSurah: 1,
+  selectedAyah: 1,
 })
 
-defineEmits(['ayah-click'])
+defineEmits<{
+  'ayah-click':[ayah:Ayah]
+}>()
 
-const isHighlighted = (ayah) => {
+const isHighlighted = (ayah:Ayah) => {
   return props.selectedSurah === ayah.surah.number && 
          ayah.numberInSurah === props.selectedAyah
 }

@@ -154,10 +154,24 @@
   </div>
 </template>
 
-<script setup>
-const quranData = inject('quranData')
-const navigation = inject('navigation')
-const textSettings = inject('textSettings')
+<script setup lang="ts">
+import type { UseQuranDataReturn, UseQuranNavigationReturn, UseQuranTextSettingsReturn } from '~~/types'
+
+
+const quranData = inject<UseQuranDataReturn>('quranData')
+if(!quranData){
+  throw new Error('quranData must be provided')
+}
+
+const navigation = inject<UseQuranNavigationReturn>('navigation')
+if(!navigation){
+  throw new Error('navigation must be provided')
+}
+
+const textSettings = inject<UseQuranTextSettingsReturn>('textSettings')
+if(!textSettings){
+  throw new Error('textSettings must be provided')
+}
 </script>
 
 

@@ -1,20 +1,22 @@
-export const useQuranNavigation = (quranData) => {
+import type { QuranApiResponse, UseQuranDataReturn, UseQuranNavigationReturn } from "~~/types"
 
-  const selectedSurah = useCookie('quran-surah', { 
+export const useQuranNavigation = (quranData:UseQuranDataReturn):UseQuranNavigationReturn => {
+
+  const selectedSurah = useCookie<number>('quran-surah', { 
     default: () => 1
   })
   
-  const selectedAyah = useCookie('quran-ayah', { 
+  const selectedAyah = useCookie<number>('quran-ayah', { 
     default: () => 1
   })
   
-  const selectedJuz = useCookie('quran-juz', { 
+  const selectedJuz = useCookie<number>('quran-juz', { 
     default: () => 1
   })
 
-  const pageInput = ref(quranData.pageCounter.value)
-  const updating = ref(false)
-  const ignorePageChange = ref(false)
+  const pageInput = ref<number>(quranData.pageCounter.value)
+  const updating = ref<boolean>(false)
+  const ignorePageChange = ref<boolean>(false)
 
   const ayahList = computed(() => {
     const surah = quranData.surahMeta.value.find(s => s.number === selectedSurah.value)
@@ -25,17 +27,19 @@ export const useQuranNavigation = (quranData) => {
   const juzNumber = computed(() => quranData.showPage.value?.ayahs?.[0]?.juz ?? '-')
   const surahPage = computed(() => quranData.showPage.value?.ayahs?.[0]?.surah?.name ?? '-')
 
-  const ayahNumber = (index) => computed(() => 
+  const ayahNumber = (index:number) => computed(() => 
     quranData.showPage.value?.ayahs?.[index]?.number ?? '-'
   )
 
-  const updateJuzBasedOnSurahAyah = (surah, ayah) => {
+  const updateJuzBasedOnSurahAyah = (surah:number, ayah:number):void => {
     if (!quranData.juzsMeta.value?.length) return
     
     for (let i = 0; i < quranData.juzsMeta.value.length; i++) {
       const currentJuz = quranData.juzsMeta.value[i]
       const nextJuz = quranData.juzsMeta.value[i + 1]
       
+      if (!currentJuz) return
+
       const isInCurrentJuz = 
         surah > currentJuz.surah || 
         (surah === currentJuz.surah && ayah >= currentJuz.ayah)
@@ -53,7 +57,7 @@ export const useQuranNavigation = (quranData) => {
     }
   }
   
-  const applyPageChange = () => {
+  const applyPageChange = ():void => {
     if (pageInput.value >= 1 && pageInput.value <= 604) {
       updating.value = true
       quranData.pageCounter.value = pageInput.value
@@ -63,7 +67,7 @@ export const useQuranNavigation = (quranData) => {
     }
   }
 
-  const nextPage = () => {
+  const nextPage = ():void => {
     if (quranData.pageCounter.value < 604) {
       quranData.pageCounter.value++
     }
@@ -90,7 +94,7 @@ export const useQuranNavigation = (quranData) => {
     
     if (ayahPageIndex === -1) {
       try {
-        const response = await $fetch(
+        const response = await $fetch<QuranApiResponse<{page:number}>>(
           `https://api.alquran.cloud/v1/ayah/${newSurah}:${newAyah}`
         )
         const ayahData = response?.data
@@ -186,7 +190,7 @@ export const useQuranNavigation = (quranData) => {
       updating.value = false
     } else {
       try {
-        const response = await $fetch(
+        const response = await $fetch<QuranApiResponse<{page:number}>>(
           `https://api.alquran.cloud/v1/ayah/${selectedSurah.value}:${newAyah}`
         )
         const ayahData = response?.data

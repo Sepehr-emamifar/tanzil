@@ -27,12 +27,22 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  ayahs: Array,
-  translations: Array,
-  translationStyle: Object,
-  contentStyle: Object,
+<script setup lang="ts">
+import type { Ayah, TextStyle } from '~~/types'
+
+interface Props {
+  ayahs: Ayah[]
+  translations: Ayah[]
+  translationStyle: Record<string,string>,
+  contentStyle: Record<string,string>,
+}
+
+const props = withDefaults(defineProps<Props>(),{
+  ayahs: ()=> ([]),
+  translations: ()=> ([]),
+  translationStyle: ()=>({}),
+  contentStyle:  ()=>({})
 })
-const {removeArabicDiacritics} = useRemoveArabicSigns() 
+
+const { removeArabicDiacritics } = useRemoveArabicSigns()
 </script>

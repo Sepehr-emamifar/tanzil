@@ -1,38 +1,40 @@
-export const useQuranData = () => {
+import type { Edition, QuranApiResponse, QuranMetaData, QuranPageData, UseQuranDataReturn } from "~~/types"
+
+export const useQuranData = ():UseQuranDataReturn => {
   
-  const selectedEdition = useCookie('quran-edition', { 
+  const selectedEdition = useCookie<string>('quran-edition', { 
     default: () => 'quran-uthmani'
   })
   
-  const selectedTranslator = useCookie('quran-translator', { 
+  const selectedTranslator = useCookie<string>('quran-translator', { 
     default: () => 'fa.ghomshei'
   })
   
-  const selectedQari = useCookie('quran-qari', { 
+  const selectedQari = useCookie<string>('quran-qari', { 
     default: () => 'ar.alafasy'
   })
   
-  const pageCounter = useCookie('quran-page', { 
+  const pageCounter = useCookie<number>('quran-page', { 
     default: () => 1
   })
 
-  const { data: meta, status: metaStatus } = useFetch(
+  const { data: meta, status: metaStatus } = useFetch<QuranApiResponse<QuranMetaData>>(
     'https://api.alquran.cloud/v1/meta'
   )
-  
-  const { data: quran, status: quranStatus } = useFetch(
+
+  const { data: quran, status: quranStatus } = useFetch<QuranApiResponse<Edition[]>>(
     'https://api.alquran.cloud/v1/edition'
   )
-  
-  const { data: page, status: pageStatus, error: pageError, refresh: refreshPage } = useFetch(() => 
+
+  const { data: page, status: pageStatus, error: pageError, refresh: refreshPage } = useFetch<QuranApiResponse<QuranPageData>>(() => 
     `https://api.alquran.cloud/v1/page/${pageCounter.value}/${selectedEdition.value}`
   )
-  
-  const { data: tarjomeh, status: tarjomehStatus, error: tarjomehError, refresh: refreshTarjomeh } = useFetch(() => 
+
+  const { data: tarjomeh, status: tarjomehStatus, error: tarjomehError, refresh: refreshTarjomeh } = useFetch<QuranApiResponse<QuranPageData>>(() => 
     `https://api.alquran.cloud/v1/page/${pageCounter.value}/${selectedTranslator.value}`
   )
-  
-  const { data: audio, status: audioStatus, error: audioError, refresh: refreshAudio } = useFetch(() => 
+
+  const { data: audio, status: audioStatus, error: audioError, refresh: refreshAudio } = useFetch<QuranApiResponse<QuranPageData>>(() => 
     `https://api.alquran.cloud/v1/page/${pageCounter.value}/${selectedQari.value}`
   )
 

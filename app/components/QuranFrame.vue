@@ -51,25 +51,28 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  currentPage: Number,
-  juzNumber: Number,
-  surahName: String,
-  headerStyle: Object,
-  showHeader: {
-    type: Boolean,
-    default: true
-  }
-})
+<script setup lang="ts">
+import type { QuranFrameEmits, QuranFrameProps, UseAppTemplateReturn, UseQuranDataReturn } from '~~/types';
 
-defineEmits(['previous-page', 'next-page'])
 
-const quranData = inject('quranData')
-const appTemplate = inject('appTemplate')
+withDefaults(defineProps<QuranFrameProps>(), {
+  currentPage: 1,
+  juzNumber: 1,
+  surahName: '',
+  headerStyle: ()=>({}),
+  showHeader: true
+}
+)
+defineEmits<QuranFrameEmits>()
+
+const quranData = inject<UseQuranDataReturn>('quranData')
+if(!quranData){
+  throw new Error('quran data must be provided')
+}
+const appTemplate = inject<UseAppTemplateReturn>('appTemplate')
+if(!appTemplate){
+  throw new Error
+}
 const {removeArabicDiacritics} = useRemoveArabicSigns()
 
 </script>
-
-
-

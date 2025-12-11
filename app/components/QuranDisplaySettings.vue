@@ -51,22 +51,30 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  selectedFont: String,
-  fontSize: Number,
-  fontOptions: Array
+<script setup lang="ts">
+import type { FontOption } from '~~/types';
+
+interface Props{
+  selectedFont: string,
+  fontSize: number,
+  fontOptions: FontOption[]
+}
+const props = withDefaults(defineProps<Props>(),{
+  selectedFont: '',
+  fontSize: 1,
+  fontOptions: ()=> ([])
 })
 
-const emit = defineEmits([
-  'update:selectedFont',
-  'increase-font',
-  'decrease-font',
-  'reset-font'
-])
+const emit = defineEmits<{
+  'update:selectedFont': [value:string]
+  'increase-font': []
+  'decrease-font': []
+  'reset-font': []
+
+}>()
 
 const selectedFont = computed({
   get: () => props.selectedFont,
-  set: (value) => emit('update:selectedFont', value)
+  set: (value:string) => emit('update:selectedFont', value)
 })
 </script>

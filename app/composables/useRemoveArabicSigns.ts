@@ -1,5 +1,13 @@
-export const useRemoveArabicSigns = () =>{
-    const removeArabicDiacritics = (text) => {
+import type { Ayah } from "~~/types/index"
+
+interface UseRemoveArabicSignsReturn {
+  removeArabicDiacritics: (text: string) => string
+  removeBismillah: (ayah: Ayah) => string
+  convertToArabicNumber: (num: number) => string
+}
+
+export const useRemoveArabicSigns = ():UseRemoveArabicSignsReturn =>{
+    const removeArabicDiacritics = (text:string):string => {
       if (!text) return ''
       return text
         .replace(/سُورَةُ\s*/g, '')
@@ -24,7 +32,7 @@ export const useRemoveArabicSigns = () =>{
         .replace(/تۡ/g,'ت')
         .trim()
     }
-    const removeBismillah = (ayah) => {
+    const removeBismillah = (ayah:Ayah):string => {
       if (!ayah?.text) return ''
         
       if (ayah.numberInSurah !== 1) {
@@ -46,9 +54,15 @@ export const useRemoveArabicSigns = () =>{
 
       return text
     } 
-    const convertToArabicNumber = (num) => {
-        const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩']
-        return String(num).split('').map(digit => arabicNumbers[parseInt(digit)]).join('')
+    const convertToArabicNumber = (num: number): string => {
+      const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩']
+      return String(num)
+      .split('')
+      .map(digit => {
+        const index = parseInt(digit)
+        return isNaN(index) ? digit : arabicNumbers[index]
+      })
+      .join('')
     }
     return{
         removeArabicDiacritics,

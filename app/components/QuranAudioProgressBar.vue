@@ -122,36 +122,49 @@
   
 </template>
 
-<script setup>
-const props = defineProps({
-  currentSurah: {
-    type: Number,
-    default: 1
-  },
-  currentAyah: {
-    type: Number,
-    default: 1
-  }
+<script setup lang="ts">
+import type { UseAppTemplateReturn, UseQuranDataReturn } from '~~/types';
+
+const internalAudioElement = ref<HTMLAudioElement | null>(null)
+const isPlaying = ref<boolean>(false)
+const currentTime = ref<number>(0)
+const duration = ref<number>(0)
+const sliderValue = ref<number[]>([0])
+const played = ref<boolean>(false)
+
+interface Props{
+  currentSurah:number
+  currentAyah:number
+}
+const props = withDefaults(defineProps<Props>(),{
+  currentSurah: 1,
+  currentAyah: 1,
 })
 
-const appTemplate = inject('appTemplate')
-const emit = defineEmits(['previous-ayah', 'next-ayah', 'audio-ended', 'audio-loaded'])
+const emit = defineEmits<{
+  'previous-ayah':[]
+  'next-ayah':[]
+  'audio-ended':[]
+  'audio-loaded':[]
+}>()
 
-const internalAudioElement = ref(null)
-const isPlaying = ref(false)
-const currentTime = ref(0)
-const duration = ref(0)
-const sliderValue = ref([0])
-const played = ref(false)
+const appTemplate = inject<UseAppTemplateReturn>('appTemplate')
+if(!appTemplate){
+  throw new Error('appTemplate must be provided')
+}
+const quranData = inject<UseQuranDataReturn>('quranData')
+if(!quranData){
+  throw new Error('quranData must be provided')
+}
 
-const formatTime = (seconds) => {
+const formatTime = (seconds:number):string => {
   if (!seconds || isNaN(seconds)) return '00:00'
   const mins = Math.floor(seconds / 60)
   const secs = Math.floor(seconds % 60)
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-const togglePlayPause = () => {
+const togglePlayPause = ():void => {
   if (!internalAudioElement.value) return
   
   if (isPlaying.value) {
@@ -161,15 +174,17 @@ const togglePlayPause = () => {
   }
 }
 
-const handleSeek = (value) => {
+const handleSeek = (value:number[] | undefined) => {
   if (!internalAudioElement.value) return
   
   const seekTime = Array.isArray(value) ? value[0] : value
+  if (seekTime === undefined) return
+
   internalAudioElement.value.currentTime = seekTime
   currentTime.value = seekTime
 }
 
-const handleEnded = () => {
+const handleEnded = ():void => {
   isPlaying.value = false
   emit('audio-ended')
   emit('next-ayah')
@@ -215,5 +230,4 @@ defineExpose({
   audioElement: internalAudioElement,
   isPlaying
 })
-const quranData = inject('quranData')
 </script>

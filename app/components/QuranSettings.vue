@@ -20,10 +20,22 @@
   </div>
 </template>
 
-<script setup>
-const appTemplate = inject('appTemplate')
+<script setup lang="ts">
+import type { UseAppTemplateReturn, SelectedTemplate } from '~~/types'
 
-const templateOptions = [
+const appTemplate = inject<UseAppTemplateReturn>('appTemplate')
+
+if (!appTemplate) {
+  throw new Error('appTemplate is not provided')
+}
+
+interface TemplateOption {
+  label: string
+  icon: string
+  value: SelectedTemplate
+}
+
+const templateOptions: TemplateOption[] = [
   {
     label: 'Desktop',
     icon: 'i-lucide-monitor',

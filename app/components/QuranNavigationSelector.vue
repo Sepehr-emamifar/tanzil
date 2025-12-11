@@ -46,31 +46,45 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  selectedSurah: Number,
-  selectedAyah: Number,
-  selectedJuz: Number,
-  surahMeta: Array,
-  ayahList: Array,
-  juzsMeta: Array
+<script setup lang="ts">
+import type { SurahReference, JuzReference } from '~~/types'
+
+interface Props {
+  selectedSurah: number
+  selectedAyah: number
+  selectedJuz: number
+  surahMeta: SurahReference[]
+  ayahList: number[]
+  juzsMeta: JuzReference[]
+}
+const props = withDefaults(defineProps<Props>(), {
+  selectedSurah: 1,
+  selectedAyah: 1,
+  selectedJuz: 1,
+  surahMeta: () => ([]),
+  ayahList: () => ([]),
+  juzsMeta: () => ([])
 })
 
-const emit = defineEmits(['update:selectedSurah', 'update:selectedAyah', 'update:selectedJuz'])
+const emit = defineEmits<{
+  'update:selectedSurah': [value:number]
+  'update:selectedAyah': [value:number]
+  'update:selectedJuz':[value:number]
+}>()
 
 const selectedSurah = computed({
   get: () => props.selectedSurah,
-  set: (value) => emit('update:selectedSurah', value)
+  set: (value: number) => emit('update:selectedSurah', value)
 })
 
 const selectedAyah = computed({
   get: () => props.selectedAyah,
-  set: (value) => emit('update:selectedAyah', value)
+  set: (value: number) => emit('update:selectedAyah', value)
 })
 
 const selectedJuz = computed({
   get: () => props.selectedJuz,
-  set: (value) => emit('update:selectedJuz', value)
+  set: (value: number) => emit('update:selectedJuz', value)
 })
 
 const {removeArabicDiacritics} = useRemoveArabicSigns()
@@ -78,7 +92,7 @@ const {removeArabicDiacritics} = useRemoveArabicSigns()
 const surahOptions = computed(() => 
   props.surahMeta?.map(item => ({
     value: item.number,
-    label: `${item.number}. ${removeArabicDiacritics(item.name)}` // نام سوره اول، بعد شماره
+    label: `${item.number}. ${removeArabicDiacritics(item.name)}`
   })) || []
 )
 

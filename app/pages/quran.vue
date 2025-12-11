@@ -38,15 +38,17 @@
   </QuranFrame>
 </template>
 
-<script setup>
-const quranData = inject('quranData')
-const navigation = inject('navigation')
-const textSettings = inject('textSettings')
-const audio = inject('audio')
-const toast = useAppToast()
-const network = inject('network')
+<script setup lang="ts">
+import type { UseNetworkStatusReturn, UseQuranAudioReturn, UseQuranDataReturn, UseQuranNavigationReturn, UseQuranTextSettingsReturn } from '~~/types'
 
-const handleRetry = async () => {
+const quranData = inject<UseQuranDataReturn>('quranData')!
+const navigation = inject<UseQuranNavigationReturn>('navigation')!
+const textSettings = inject<UseQuranTextSettingsReturn>('textSettings')!
+const audio = inject<UseQuranAudioReturn>('audio')!
+const toast = useAppToast()
+const network = inject<UseNetworkStatusReturn>('network')!
+
+const handleRetry = async ():Promise<void> => {
   
   if (!network.isOnline.value) {
     toast.toastError({

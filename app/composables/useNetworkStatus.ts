@@ -1,8 +1,10 @@
-export const useNetworkStatus = () => {
-  const isOnline = ref(true)
+import type { UseNetworkStatusReturn } from "~~/types"
+
+export const useNetworkStatus = ():UseNetworkStatusReturn => {
+  const isOnline: Ref<boolean> = ref(true)
   const toast = useAppToast()
 
-  const updateOnlineStatus = () => {
+  const updateOnlineStatus = ():void => {
     isOnline.value = navigator.onLine
     
     if (!isOnline.value) {

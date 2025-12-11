@@ -1,9 +1,12 @@
-export const useTextSettings = () => {
-  const selectedFont = useCookie('quran-font', { 
+import type { UseQuranTextSettingsReturn } from "~~/types"
+
+export const useTextSettings = ():UseQuranTextSettingsReturn => {
+
+  const selectedFont = useCookie<string>('quran-font', { 
     default: () => 'Scheherazade New' 
   })
   
-  const fontSize = useCookie('quran-fontSize', { 
+  const fontSize = useCookie<number>('quran-fontSize', { 
     default: () => 100
   })
   
@@ -32,21 +35,21 @@ export const useTextSettings = () => {
   }))
 
   // Actions
-  const increaseFontSize = () => {
+  const increaseFontSize = ():void => {
     const current = Number(fontSize.value)
     if (current < 200) {
       fontSize.value = current + 5
     }
   }
 
-  const decreaseFontSize = () => {
+  const decreaseFontSize = ():void => {
     const current = Number(fontSize.value)
     if (current > 75) {
       fontSize.value = current - 5
     }
   }
 
-  const resetFontSize = () => {
+  const resetFontSize = ():void => {
     fontSize.value = 100
     selectedFont.value = 'Scheherazade New'
   }

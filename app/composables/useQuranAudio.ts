@@ -1,10 +1,17 @@
-export const useQuranAudio = (quranData, navigation, audioPlayerRef) => {
-  const isAutoPlaying = ref(false)
-  const pendingPlayRequest = ref(null)
-  const isGoingToPreviousPage = ref(false)
+import type { Ayah, UseQuranAudioReturn, UseQuranDataReturn, UseQuranNavigationReturn } from "~~/types"
+
+export const useQuranAudio = (
+  quranData:UseQuranDataReturn,
+  navigation:UseQuranNavigationReturn,
+  audioPlayerRef:ComputedRef<HTMLAudioElement | null>
+  ):UseQuranAudioReturn => {
+    
+  const isAutoPlaying = ref<boolean>(false)
+  const pendingPlayRequest = ref<{ surahNumber: number; ayahNumber: number } | null>(null)
+  const isGoingToPreviousPage = ref<boolean | null>(false)
 
 
-  const findAudioBySurahAndAyah = (surahNumber, ayahNumber) => {
+  const findAudioBySurahAndAyah = (surahNumber:number, ayahNumber:number):(string | null) => {
     if (!quranData.audio.value?.data?.ayahs) {
       return null
     }
@@ -18,7 +25,7 @@ export const useQuranAudio = (quranData, navigation, audioPlayerRef) => {
     return audioUrl
   }
 
-  const onAudioLoaded = async () => {
+  const onAudioLoaded = async ():Promise<void> => {
     
     const player = unref(audioPlayerRef)
     if (pendingPlayRequest.value && player) {
@@ -30,8 +37,8 @@ export const useQuranAudio = (quranData, navigation, audioPlayerRef) => {
     }
   }
 
-  const playAyah = async (surahNumber, ayahNumber, autoPlay = true) => {
-    
+
+  const playAyah = async (surahNumber: number, ayahNumber: number, autoPlay: boolean = true): Promise<void> => {
     const player = unref(audioPlayerRef)
     
     if (!player) {
@@ -60,12 +67,11 @@ export const useQuranAudio = (quranData, navigation, audioPlayerRef) => {
       try {
         await player.play()
         pendingPlayRequest.value = null
-      } catch (err) {
-      }
+      } catch (err) {}
     }
   }
 
-  const handleAyahClick = async (ayah) => {
+  const handleAyahClick = async (ayah:Ayah):Promise<void> => {
     
     navigation.setUpdating(true)
     navigation.selectedSurah.value = ayah.surah.number
@@ -76,7 +82,7 @@ export const useQuranAudio = (quranData, navigation, audioPlayerRef) => {
     await playAyah(ayah.surah.number, ayah.numberInSurah, true)
   }
 
-  const playNextAyah = async () => {
+  const playNextAyah = async ():Promise<void> => {
     if (!quranData.showPage.value?.ayahs) return
     
     const currentIndex = quranData.showPage.value.ayahs.findIndex(
@@ -91,6 +97,8 @@ export const useQuranAudio = (quranData, navigation, audioPlayerRef) => {
     if (currentIndex < totalAyahs - 1) {
       const nextAyah = quranData.showPage.value.ayahs[currentIndex + 1]
       
+      if (!nextAyah) return
+
       navigation.setUpdating(true)
       navigation.selectedSurah.value = nextAyah.surah.number
       navigation.selectedAyah.value = nextAyah.numberInSurah
@@ -123,9 +131,10 @@ export const useQuranAudio = (quranData, navigation, audioPlayerRef) => {
         const pageChanged = oldAudio?.data?.ayahs?.[0]?.page !== newAudio?.data?.ayahs?.[0]?.page
         
         if (pageChanged && isGoingToPreviousPage.value) {
-          // فقط برای صفحه قبلی آخرین آیه رو انتخاب کن
           const lastAyah = quranData.showPage.value.ayahs[quranData.showPage.value.ayahs.length - 1]
-          
+
+          if (!lastAyah) return
+
           navigation.setUpdating(true)
           navigation.selectedSurah.value = lastAyah.surah.number
           navigation.selectedAyah.value = lastAyah.numberInSurah
@@ -172,6 +181,8 @@ export const useQuranAudio = (quranData, navigation, audioPlayerRef) => {
     
     if (currentIndex > 0) {
       const prevAyah = quranData.showPage.value.ayahs[currentIndex - 1]
+      
+      if (!prevAyah) return
       
       navigation.setUpdating(true)
       navigation.selectedSurah.value = prevAyah.surah.number

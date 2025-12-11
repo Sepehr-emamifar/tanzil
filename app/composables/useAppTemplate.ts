@@ -1,12 +1,15 @@
-export const useAppTemplate = () => {
-  const selectedTemplate = useCookie('app-template', { 
+import type { SelectedTemplate, UseAppTemplateReturn } from "~~/types"
+
+export const useAppTemplate = ():UseAppTemplateReturn => {
+  const selectedTemplate = useCookie<SelectedTemplate>('app-template', {
     default: () => 'desktop',
   })
 
-  const isMobileView = ref(selectedTemplate.value === 'mobile')
+  const isMobileView = ref<boolean>(selectedTemplate.value === 'mobile')
 
-  const checkScreenSize = () => {
-    if (process.client) {
+  const checkScreenSize = ():void => {
+      if (typeof window === 'undefined') return
+
       const width = window.innerWidth
       
       if (width < 864 && selectedTemplate.value === 'desktop') {
@@ -16,7 +19,7 @@ export const useAppTemplate = () => {
       } else {
         isMobileView.value = false
       }
-    }
+    
   }
 
   watch(selectedTemplate, (newTemplate) => {
@@ -25,6 +28,8 @@ export const useAppTemplate = () => {
 
   onMounted(() => {
     checkScreenSize()
+
+    if (typeof window === 'undefined') return
 
     // if screen is small
     if (!selectedTemplate.value && window.innerWidth < 864) {

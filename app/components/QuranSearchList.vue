@@ -15,20 +15,28 @@
             </div>
         </div>
 </template>
-<script setup>
+<script setup lang="ts">
+import type { Ayah, UseQuranNavigationReturn } from '../../types/index'
 
-const props = defineProps({
-    searchResults: Array,
-    resultsCount: Number,
-    headerStyle: Object,
-    contentStyle: Object,
+interface Props {
+  searchResults: Ayah[],
+  headerStyle: Record<string,string>,
+  contentStyle: Record<string,string>,
+}
+withDefaults(defineProps<Props>(),{
+  searchResults: ()=> [],
+  headerStyle:()=> ({}),
+  contentStyle:()=> ({})
 })
 
-const navigation = inject('navigation')
+const navigation = inject<UseQuranNavigationReturn>('navigation')
+if (!navigation) {
+  throw new Error('Navigation must be provided!')
+}
+
 const removeSigns = useRemoveArabicSigns().removeArabicDiacritics
 
-
-const navigateToAyah = (result) => {
+const navigateToAyah = (result: Ayah) :void => {
   navigation.selectedSurah.value = result.surah.number
   navigation.selectedAyah.value = result.numberInSurah
   navigateTo('/quran')
